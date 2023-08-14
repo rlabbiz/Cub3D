@@ -6,7 +6,7 @@
 #    By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/27 17:47:56 by rlabbiz           #+#    #+#              #
-#    Updated: 2023/07/28 11:24:42 by rlabbiz          ###   ########.fr        #
+#    Updated: 2023/08/01 20:06:44 by rlabbiz          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,8 @@ CC = cc
 FLG = -Wall -Wextra -Werror
 MLX = -Imlx -lmlx -framework OpenGL -framework AppKit
 NAME = cub3d
-OBJ = check_map.o
+OBJ =	check_map.o \
+		draw_map.o
 MAIN = cub3d.c
 DEF = cub3d.h
 LIBFT = libft/libft.a
