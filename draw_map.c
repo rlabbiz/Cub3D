@@ -6,11 +6,20 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/01 19:54:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/20 18:05:08 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/20 19:01:02 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+float	uniform_angle(float angle)
+{
+	if (angle > 2.0 * M_PI)
+		angle -= 2.0 * M_PI;
+	else if (angle < 0.0)
+		angle += 2.0 * M_PI;
+	return (angle);
+}
 
 int	abs(int n) { return ((n > 0) ? n : (n * (-1))); }
  
@@ -101,7 +110,7 @@ float	resize_angle(float angle)
 	return (angle);
 }
 
-void	draw_square(t_mlx *mlx, int i, int j)
+void	draw_square(t_mlx *mlx, int i, int j, int color)
 {
 	int	x;
 	int	y;
@@ -113,7 +122,7 @@ void	draw_square(t_mlx *mlx, int i, int j)
 		y = 0;
 		while (y < TAIL_SIZE)
 		{
-			mlx_put(mlx, j * TAIL_SIZE + y, i * TAIL_SIZE + x, 0x979A9A);
+			mlx_put(mlx, j * TAIL_SIZE + y, i * TAIL_SIZE + x, color);
 			y++;
 		}
 		x++;
@@ -168,8 +177,10 @@ void    draw_map(t_mlx *mlx, int player)
 		while (mlx->map[i][j])
 		{
 			if (mlx->map[i][j] == '1')
-				draw_square(mlx, i, j);
-			else if (player && ft_strchr("NWSE", mlx->map[i][j]))
+				draw_square(mlx, i, j, 0x979A9A);
+			else if (mlx->map[i][j] == '0' || ft_strchr("NWSE", mlx->map[i][j]))
+				draw_square(mlx, i, j, 0x000000);
+			if (player && ft_strchr("NWSE", mlx->map[i][j]))
 			{
 				mlx->player.x = (j * TAIL_SIZE) + TAIL_SIZE / 2;
 				mlx->player.y = (i * TAIL_SIZE) + TAIL_SIZE / 2;
@@ -215,10 +226,11 @@ float	horezontal(t_mlx *mlx, float *hor_x, float *hor_y, float angle)
 	start_x = mlx->player.x + (start_y - mlx->player.y) / tan(angle);
 
 	step_y = TAIL_SIZE;
-	step_y *= mlx->ray.is_up ? -1 : 1;
+	// step_y *= mlx->ray.is_up ? -1 : 1;
+	step_y *= 1 - 2 * (mlx->ray.is_up != 0);
 	step_x = TAIL_SIZE / tan(angle);
-	step_x *= mlx->ray.is_left && step_x > 0 ? -1 : 1;
-	step_x *= mlx->ray.is_right && step_x < 0 ? -1 : 1;
+	step_x *= (mlx->ray.is_left && step_x > 0) ? -1 : 1;
+	step_x *= (mlx->ray.is_right && step_x < 0) ? -1 : 1;
 	while (1)
 	{
 		if (mlx->ray.is_up)
@@ -282,7 +294,7 @@ void	cast_rays(t_mlx *mlx, float angle, int ray)
 	mlx->ray.is_down = angle > 0 && angle < M_PI;
 	mlx->ray.is_up = !mlx->ray.is_down;
 	
-	mlx->ray.is_right = angle < 0.5 * M_PI || angle > 1.5 * M_PI;
+	mlx->ray.is_right = angle < M_PI / 2.0 || angle > 3.0 * M_PI / 2.0;
 	mlx->ray.is_left = !mlx->ray.is_right;
 
 	float hor_x = mlx->width, hor_y = mlx->height;
@@ -313,6 +325,7 @@ void	draw_player(t_mlx *mlx)
 	const float RAYS = mlx->width;
 	int col = 0;
 	float rayAngle = mlx->player.rotate - (FOV / 2);
+	
 
 	while (x < 3)
 	{
@@ -325,10 +338,11 @@ void	draw_player(t_mlx *mlx)
 		x++;
 	}
 	// cast_rays(mlx, mlx->player.rotate, 0);
+	float angle_increment = FOV / RAYS;
 	while (col < RAYS)
 	{
-		cast_rays(mlx, rayAngle, col);
-		rayAngle += FOV / RAYS;
+		cast_rays(mlx, uniform_angle(rayAngle), col);
+		rayAngle += angle_increment;
 		col++;
 	}
 	draw_angle(mlx);

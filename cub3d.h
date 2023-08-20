@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/20 17:12:43 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/20 18:40:57 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ typedef struct s_player
 {
 	int	x;
 	int	y;
-	float	rotate;
+	double	rotate;
 }	t_player;
 
 typedef struct s_mlx
