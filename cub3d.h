@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/12 12:10:14 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/20 17:12:43 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,18 @@
 # define GRN "\e[0;32m"
 # define YEL "\e[0;33m"
 # define reset "\e[0m"
-# define TAIL_SIZE 50
+
+# define TAIL_SIZE 32
+
+// define the keys of keyboard 
+# define LEFT_ARROW 123
+# define RIGHT_ARROW 124
+# define KEY_A 0
+# define KEY_W 13
+# define KEY_S 1
+# define KEY_D 2
+# define KEY_ESC 53
+
 typedef struct s_texture
 {
 	int	no;
@@ -42,6 +53,14 @@ typedef struct s_angle
 	float	x;
 	float	y;
 }	t_angle;
+
+typedef struct s_ray
+{
+	int	is_up;
+	int	is_down;
+	int	is_right;
+	int	is_left;
+}	t_ray;
 
 typedef struct s_player
 {
@@ -67,11 +86,15 @@ typedef struct s_mlx
 	t_texture	texture;
 	t_player	player;
 	t_angle		angle;
+	t_ray		ray;
 }	t_mlx;
 
 // cub3d
 int		skip_spaces(const char *str);
 void	mlx_put(t_mlx *mlx, int x, int y, int color);
+
+// handle_key
+int ft_key_hook(int key, t_mlx *mlx);
 
 // chech_map
 int		check_map(const char *path, t_mlx *mlx);
@@ -79,6 +102,7 @@ t_list	*read_map(const char *path);
 t_list	*check_empty_line(t_list *lst);
 
 // draw_map
+void	DDA(t_mlx *mlx, int X0, int Y0, int X1, int Y1, int color);
 void    draw_map(t_mlx *mlx, int player);
 char	**get_map(t_list *lst);
 void	draw_player(t_mlx *mlx);

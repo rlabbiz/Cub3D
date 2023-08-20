@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 11:18:07 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/14 12:21:03 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/15 11:12:10 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ t_list *read_map(const char *path)
 		if (!line)
 			break ;
 		sub_line = ft_strtrim(line, "\n");
-        free(line);
+        // free(line);
 		line = NULL;
 		if (sub_line || sub_line[0])
 			ft_lstadd_back(&lst, ft_lstnew(sub_line));
@@ -258,7 +258,7 @@ int	check_valid_map(t_mlx *mlx, char *curr, char *next, int next_len, int i)
 	else if (curr[i] == 'W')
 		mlx->player.rotate = M_PI;
 	else if (curr[i] == 'E')
-		mlx->player.rotate = 2 * M_PI;
+		mlx->player.rotate = 0;
 	return (1);
 }
 
@@ -276,7 +276,7 @@ int	check_valid_maps_line(t_mlx *mlx, char *curr, char *next)
 	char *line = ft_strtrim(curr, " ");
 	if (line[0] != '1' || line[ft_strlen(line) - 1] != '1')
 		return (0);
-	free(line);
+	// free(line);
 	while (curr[i])
 	{
 		if (!check_valid_map(mlx, curr, next, next_len, i))
