@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/19 16:06:46 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/20 19:23:57 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/20 20:06:26 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,6 @@ void	handle_key_W(t_mlx *mlx)
 		
 		dx = cos(mlx->player.rotate) / 3.0;
 		dy = sin(mlx->player.rotate) / 3.0;
-
-		printf("p = {%lf, %lf}\nd = {%lf, %lf}\n", px, py, dx, dy);
-		printf("ppos = {%d, %d}\n", mlx->player.x, mlx->player.y);
 		
 		change_y = 0;
 		if (mlx->map[(int)(py + dy)][(int)(px + dx)] == '1')
@@ -66,8 +63,6 @@ void	handle_key_W(t_mlx *mlx)
 
 		mlx->player.x = px * TAIL_SIZE;
 		mlx->player.y = py * TAIL_SIZE;
-		printf("p = {%lf, %lf}\n", px, py);
-		printf("apos = {%d, %d}\n", mlx->player.x, mlx->player.y);
 		// draw_player(mlx);
 	}
 }
@@ -87,9 +82,6 @@ void	handle_key_S(t_mlx *mlx)
 		
 		dx = -1.0 * cos(mlx->player.rotate) / 2.0;
 		dy = -1.0 * sin(mlx->player.rotate) / 2.0;
-
-		printf("p = {%lf, %lf}\nd = {%lf, %lf}\n", px, py, dx, dy);
-		printf("ppos = {%d, %d}\n", mlx->player.x, mlx->player.y);
 		
 		change_y = 0;
 		if (mlx->map[(int)(py + dy)][(int)(px + dx)] == '1')
@@ -103,8 +95,6 @@ void	handle_key_S(t_mlx *mlx)
 
 		mlx->player.x = px * TAIL_SIZE;
 		mlx->player.y = py * TAIL_SIZE;
-		printf("p = {%lf, %lf}\n", px, py);
-		printf("apos = {%d, %d}\n", mlx->player.x, mlx->player.y);
 		// draw_player(mlx);
 	}
 }
