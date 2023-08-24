@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/01 19:54:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/20 19:01:02 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/24 13:22:56 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ char	**get_map(t_list *lst)
 	int		len;
 	int		i;
 	char	**map;
-	
+	// char	*line;
 	len = 0;
 	i = 0;
 	while (lst && len < 6)
@@ -129,48 +129,42 @@ void	draw_square(t_mlx *mlx, int i, int j, int color)
 	}
 }
 
-void	draw_lines(t_mlx *mlx)
+// void	draw_lines(t_mlx *mlx)
+// {
+// 	int	i;
+// 	int j;
+
+// 	j = TAIL_SIZE;
+// 	while (j < mlx->mini.height)
+// 	{
+// 		i = 0;
+// 		while (i < mlx->mini.width)
+// 		{
+// 			mlx_put(mlx, i, j, 0xE74C3C);
+// 			i += 1;
+// 		}
+// 		j += TAIL_SIZE;
+// 	}
+// 	i = TAIL_SIZE;
+// 	while (i < mlx->mini.width)
+// 	{
+// 		j = 0;
+// 		while (j < mlx->mini.height)
+// 		{
+// 			mlx_put(mlx, i, j, 0xE74C3C);
+// 			j += 1;
+// 		}
+// 		i += TAIL_SIZE;
+// 	}
+// }
+
+// function to draw mini map please call this function after finish the ray casting.
+void	draw_mini_map(t_mlx *mlx)
 {
-	int	i;
+	int i;
 	int j;
 
-	j = TAIL_SIZE;
-	while (j < mlx->height)
-	{
-		i = 0;
-		while (i < mlx->width)
-		{
-			mlx_put(mlx, i, j, 0xE74C3C);
-			i += 1;
-		}
-		j += TAIL_SIZE;
-	}
-	i = TAIL_SIZE;
-	while (i < mlx->width)
-	{
-		j = 0;
-		while (j < mlx->height)
-		{
-			mlx_put(mlx, i, j, 0xE74C3C);
-			j += 1;
-		}
-		i += TAIL_SIZE;
-	}
-}
-
-void    draw_map(t_mlx *mlx, int player)
-{
-	t_list	*lst;
-	int		i;
-	int		j;
-	
-	if (mlx->img == NULL)
-	{
-		mlx->img = mlx_new_image(mlx->mlx, mlx->width, mlx->height);
-		mlx->addr = mlx_get_data_addr(mlx->img, &mlx->bits_per_pixel, &mlx->line_lenght, &mlx->endian);
-	}
 	i = 0;
-	lst = mlx->lst;
 	while (mlx->map[i])	
 	{
 		j = 0;
@@ -180,25 +174,43 @@ void    draw_map(t_mlx *mlx, int player)
 				draw_square(mlx, i, j, 0x979A9A);
 			else if (mlx->map[i][j] == '0' || ft_strchr("NWSE", mlx->map[i][j]))
 				draw_square(mlx, i, j, 0x000000);
-			if (player && ft_strchr("NWSE", mlx->map[i][j]))
+			j++;
+		}
+		i++;
+	}
+	draw_player(mlx);
+}
+
+void	get_player_postion(t_mlx *mlx)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (mlx->map[i])	
+	{
+		j = 0;
+		while (mlx->map[i][j])
+		{
+			if (ft_strchr("NWSE", mlx->map[i][j]))
 			{
 				mlx->player.x = (j * TAIL_SIZE) + TAIL_SIZE / 2;
 				mlx->player.y = (i * TAIL_SIZE) + TAIL_SIZE / 2;
+				break ;
 			}
 			j++;
 		}
 		i++;
 	}
-	draw_lines(mlx);
-	draw_player(mlx);
-	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
 }
 
 int is_wall(t_mlx *mlx, int x, int y)
 {
 	int len = 0;
 	if (x < 0 || y < 0 || x > mlx->width || y > mlx->height)
+	{
 		return (-1);
+	}
 	while (mlx->map[len])
 		len++;
 	if (y >= len)
@@ -217,13 +229,13 @@ float dest_point(int x1, int y1, int x2, int y2)
 
 float	horezontal(t_mlx *mlx, float *hor_x, float *hor_y, float angle)
 {
-	float start_x, start_y;
-	float step_x, step_y;
+	double start_x, start_y;
+	double step_x, step_y;
 	int check = 0;
 
-	start_y = (mlx->player.y / TAIL_SIZE) * TAIL_SIZE;
+	start_y = ((int)(mlx->player.y) / TAIL_SIZE) * TAIL_SIZE;
 	start_y += mlx->ray.is_down ? TAIL_SIZE : 0;
-	start_x = mlx->player.x + (start_y - mlx->player.y) / tan(angle);
+	start_x = (int)(mlx->player.x) + (start_y - (int)(mlx->player.y)) / tan(angle);
 
 	step_y = TAIL_SIZE;
 	// step_y *= mlx->ray.is_up ? -1 : 1;
@@ -239,7 +251,6 @@ float	horezontal(t_mlx *mlx, float *hor_x, float *hor_y, float angle)
 			check = is_wall(mlx, start_x / TAIL_SIZE, start_y / TAIL_SIZE);
 		if (check == 1)
 		{
-			// DDA(mlx, mlx->player.x, mlx->player.y, start_x, start_y);
 			*hor_x = start_x;
 			*hor_y = start_y;
 			break ;
@@ -258,9 +269,9 @@ float	vertical(t_mlx *mlx, float *ver_x, float *ver_y, float angle)
 	float step_x, step_y;
 	int check = 0;
 
-	start_x = (mlx->player.x / TAIL_SIZE) * TAIL_SIZE;
+	start_x = ((int)(mlx->player.x) / TAIL_SIZE) * TAIL_SIZE;
 	start_x += mlx->ray.is_right ? TAIL_SIZE : 0;
-	start_y = mlx->player.y + (start_x - mlx->player.x) * tan(angle);
+	start_y = (int)(mlx->player.y) + (start_x - (int)(mlx->player.x)) * tan(angle);
 	
 	step_x = TAIL_SIZE;
 	step_x *= mlx->ray.is_left ? -1 : 1;
@@ -287,10 +298,8 @@ float	vertical(t_mlx *mlx, float *ver_x, float *ver_y, float angle)
 	return (dest_point(mlx->player.x, mlx->player.y, *ver_x, *ver_y));
 }
 
-void	cast_rays(t_mlx *mlx, float angle, int ray)
+double	cast_rays(t_mlx *mlx, float angle)
 {
-	(void)ray;
-	// angle = resize_angle(angle);
 	mlx->ray.is_down = angle > 0 && angle < M_PI;
 	mlx->ray.is_up = !mlx->ray.is_down;
 	
@@ -303,9 +312,15 @@ void	cast_rays(t_mlx *mlx, float angle, int ray)
 	hor_dest = horezontal(mlx, &hor_x, &hor_y, angle);
 	ver_dest = vertical(mlx, &ver_x, &ver_y, angle);
 	if (ver_dest < hor_dest)
-		DDA(mlx, mlx->player.x, mlx->player.y, ver_x, ver_y, 0x00FF00);
+	{
+		// DDA(mlx, mlx->player.x, mlx->player.y, mlx->player.x + ver_x, mlx->player.y + ver_y, 0xE74C3C);
+		return (ver_dest);
+	}
 	else
-		DDA(mlx, mlx->player.x, mlx->player.y, hor_x, hor_y, 0x00FF00);
+	{
+		// DDA(mlx, mlx->player.x, mlx->player.y, mlx->player.x + hor_x, mlx->player.y + hor_y, 0xE74C3C);
+		return (hor_dest);
+	}
 }
 
 void	draw_angle(t_mlx *mlx)
@@ -317,15 +332,49 @@ void	draw_angle(t_mlx *mlx)
 	DDA(mlx, mlx->player.x, mlx->player.y, mlx->player.x + x, mlx->player.y + y, 0xE74C3C);
 }
 
+void	draw_wall(t_mlx *mlx, int top, int bottom, int col)
+{
+	while (top < bottom)
+	{
+		mlx_put(mlx, col, top, 0xE74C3C);
+		top++;
+	}
+}
+
+void	rays_casting(t_mlx *mlx)
+{
+	double	FOV = 60 * (M_PI / 180);
+	double	RAYS = mlx->width;
+	double		col = 0;
+	double	rayAngle = mlx->player.rotate - (FOV / 2);
+	double	angle_increment = FOV / RAYS;
+	double	dest;
+	double	dest_project_plane = (mlx->height / 2) / tan(FOV / 2);
+	double wall_height;
+	double new_dest;
+	int		top_pixel;
+	int		bottom_pixel;
+	while (col < RAYS)
+	{
+		dest = cast_rays(mlx, uniform_angle(rayAngle));
+		new_dest = dest * cos(rayAngle - mlx->player.rotate);
+		wall_height = (TAIL_SIZE / new_dest) * dest_project_plane;
+		top_pixel = (mlx->height / 2) - (wall_height / 2);
+		if (top_pixel < 0)
+			top_pixel = 0;
+		bottom_pixel = (mlx->height / 2) + (wall_height / 2);
+		if (bottom_pixel > mlx->height)
+			bottom_pixel = mlx->height;
+		draw_wall(mlx, top_pixel, bottom_pixel, col);
+		rayAngle += angle_increment;
+		col++;
+	}
+}
+
 void	draw_player(t_mlx *mlx)
 {
 	int x = -3;
 	int y = -3;
-	const float FOV = 60 * (M_PI / 180);
-	const float RAYS = mlx->width;
-	int col = 0;
-	float rayAngle = mlx->player.rotate - (FOV / 2);
-	
 
 	while (x < 3)
 	{
@@ -337,13 +386,22 @@ void	draw_player(t_mlx *mlx)
 		}
 		x++;
 	}
-	// cast_rays(mlx, mlx->player.rotate, 0);
-	float angle_increment = FOV / RAYS;
-	while (col < RAYS)
-	{
-		cast_rays(mlx, uniform_angle(rayAngle), col);
-		rayAngle += angle_increment;
-		col++;
-	}
 	draw_angle(mlx);
+}
+
+void    draw_map(t_mlx *mlx, int player)
+{
+	t_list	*lst;
+	
+	if (mlx->img == NULL)
+	{
+		mlx->img = mlx_new_image(mlx->mlx, mlx->width, mlx->height);
+		mlx->addr = mlx_get_data_addr(mlx->img, &mlx->bits_per_pixel, &mlx->line_lenght, &mlx->endian);
+	}
+	lst = mlx->lst;
+	if (player)
+		get_player_postion(mlx);
+	rays_casting(mlx);
+	draw_mini_map(mlx);
+	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
 }

@@ -6,13 +6,13 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 11:18:07 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/15 11:12:10 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/23 15:34:11 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "cub3d.h"
 
-t_list *check_empty_line(t_list *map)
+t_list	*check_empty_line(t_list *map)
 {
 	const char	*line;
 	int			i;
@@ -22,6 +22,8 @@ t_list *check_empty_line(t_list *map)
 	{
 		i = 0;
 		line = map->content;
+		if (!line)
+			break ;
 		while (line[i] && (line[i] == ' ' || line[i] == '\t' || line[i] == '\n'))
 			i++;
 		if (line[i] != '\0')
@@ -31,7 +33,7 @@ t_list *check_empty_line(t_list *map)
 	return (map);
 }
 
-t_list *read_map(const char *path)
+t_list	*read_map(const char *path)
 {
 	t_list	*lst;
 	char	*line;
@@ -41,8 +43,6 @@ t_list *read_map(const char *path)
 	lst = NULL;
 	line = NULL;
 	sub_line = NULL;
-	if (!path)
-		return (NULL);
 	fd = open(path, O_RDONLY);
 	if (fd < 0)
 		return (NULL);
@@ -52,9 +52,9 @@ t_list *read_map(const char *path)
 		if (!line)
 			break ;
 		sub_line = ft_strtrim(line, "\n");
-        // free(line);
+        free(line);
 		line = NULL;
-		if (sub_line || sub_line[0])
+		if (sub_line)
 			ft_lstadd_back(&lst, ft_lstnew(sub_line));
 	}
 	return (lst);
@@ -92,13 +92,9 @@ int check_color_string(const char *line)
 int	check_color_int(char **split, t_mlx *mlx, char c)
 {
 	int	i;
-	int nbr;
+	int	nbr;
 
 	i = 0;
-	mlx->color.c = malloc(sizeof(int ) * 4);
-	mlx->color.f = malloc(sizeof(int ) * 4);
-	mlx->color.f[3] = 0;
-	mlx->color.c[3] = 0;
 	while (split[i])
 	{
 		nbr = ft_atoi(split[i]);
@@ -126,8 +122,14 @@ int	check_color(const char *line, t_mlx *mlx, char c)
 	if (check_color_string(line))
 	{
 		split = ft_split(line + 2, ',');
+		if (!split)
+			return (0);
 		if (check_color_int(split, mlx, c))
+		{
+			ft_free_split(split);
 			return (1);
+		}
+		ft_free_split(split);
 	}
 	return (0);
 }
@@ -140,12 +142,6 @@ int	check_texture(const char *line, t_mlx *mlx, char c)
 	i = 3;
 	if (!line[i])
 		return (0);
-	// if (line[i] == '.')
-	// 	i++;
-	// if (line[i] && line[i] == '/')
-	// 	i++;
-	// if (!line[i])
-	// 	return (0);
 	fd = open(line + 3, O_RDONLY);
 	if (fd == -1)
 		return (0);
@@ -181,26 +177,6 @@ int	check_first_lines(const char *line, t_mlx *mlx)
 		return (check_texture(line + i, mlx, 'E'));
 	return (0);
 }
-
-// char	*cnv_lst_to_string(t_list *lst)
-// {
-// 	char	*lines;
-// 	int		i;
-// 	char	*line;
-// 	i = 0;
-// 	while (lst)
-// 	{
-// 		lst = check_empty_line(lst);
-// 		if (!lst)
-// 			break ;
-// 		line = lst->content;
-// 		i = 0;
-// 		while (line[i])
-// 		{
-// 			if ()
-// 		}
-// 	}
-// }
 
 int	check_first_and_last_line(t_list *list)
 {
@@ -290,32 +266,51 @@ int check_last_lines(t_mlx *mlx, t_list *list)
 {
 	char	*curr;
 	char	*next;
+	int		len;
 
 	if (!check_first_and_last_line(list))
 		return (0);
 	list = check_empty_line(list);
 	list = list->next;
+	len = 0;
 	while (list->next)
 	{
 		curr = list->content;
 		next = list->next->content;
+		if (curr[0] == '\0')
+			break ;
 		if (!check_valid_maps_line(mlx, curr, next))
 			return (0);
+		len++;
 		list = list->next;
 	}
 	return (1);
 }
 
+int	check_enter_all(t_mlx *mlx)
+{
+	if (mlx->color.c[3] == 0 || mlx->color.f[3] == 0)
+		return (0);
+	return (1);
+}
+
 int check_map(const char *path, t_mlx *mlx)
 {
-	t_list *lst;
+	t_list	*lst;
 	int		len;
 
 	len = 0;
     mlx->lst = read_map(path);
 	lst = mlx->lst;
 	if (!lst)
+	{
+		printf("Error\n\tcan't open %s\n", path);
 		return (0);
+	}
+	mlx->color.c = malloc(sizeof(int ) * 4);
+	mlx->color.f = malloc(sizeof(int ) * 4);
+	mlx->color.f[3] = 0;
+	mlx->color.c[3] = 0;
     while (lst && len < 6)
 	{
 		lst = check_empty_line(lst);
@@ -323,17 +318,20 @@ int check_map(const char *path, t_mlx *mlx)
 			break ;
 		if (!check_first_lines(lst->content, mlx))
 		{
-			printf("Error\n");
-			printf("\tThis line is not valid : %s\n", lst->content);
+			printf("Error\n\tThis line is not valid : %s\n", lst->content);
 			return (0);
 		}
 		lst = lst->next;
 		len++;
 	}
+	if (!check_enter_all(mlx))
+	{
+		printf("Error\n\tNeed the color range\n");
+		return (0);
+	}
 	if (!check_last_lines(mlx, lst))
 	{
-		printf("Error\n");
-		printf("\tThe Map not valid\n");
+		printf("Error\n\tThe Map not valid\n");
 		return (0);
 	}
 	return (1);

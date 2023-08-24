@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/19 16:06:46 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/20 20:06:26 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/21 19:30:26 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 void	handle_key_D(t_mlx *mlx)
 {
-	if (mlx->map[mlx->player.y  / TAIL_SIZE][(mlx->player.x + 6)/ TAIL_SIZE] != '1')
+	if (mlx->map[(int )(mlx->player.y  / TAIL_SIZE)][(int )((mlx->player.x + 6)/ TAIL_SIZE)] != '1')
 	{
 		// mlx_destroy_image(mlx->mlx, mlx->img);
 		// draw_map(mlx, 0);
@@ -26,7 +26,7 @@ void	handle_key_D(t_mlx *mlx)
 
 void	handle_key_A(t_mlx *mlx)
 {
-	if (mlx->map[mlx->player.y / TAIL_SIZE][(mlx->player.x - 6) / TAIL_SIZE] != '1')
+	if (mlx->map[(int )(mlx->player.y / TAIL_SIZE)][(int )(mlx->player.x / TAIL_SIZE)] != '1')
 	{
 		// mlx_destroy_image(mlx->mlx, mlx->img);
 		// draw_map(mlx, 0);
@@ -41,10 +41,8 @@ void	handle_key_W(t_mlx *mlx)
 	float	dy;
 	int		change_y;
 	float	px, py;
-	if (mlx->map[(mlx->player.y) / TAIL_SIZE ][mlx->player.x / TAIL_SIZE ] != '1')
-	{
-		// mlx_destroy_image(mlx->mlx, mlx->img);
-		// draw_map(mlx, 0);
+	// if (mlx->map[(int )(mlx->player.y / TAIL_SIZE) ][(int )(mlx->player.x / TAIL_SIZE) ] != '1')
+	// {
 		px = (float)mlx->player.x / TAIL_SIZE;
 		py = (float)mlx->player.y / TAIL_SIZE;
 		
@@ -63,8 +61,7 @@ void	handle_key_W(t_mlx *mlx)
 
 		mlx->player.x = px * TAIL_SIZE;
 		mlx->player.y = py * TAIL_SIZE;
-		// draw_player(mlx);
-	}
+	// }
 }
 
 void	handle_key_S(t_mlx *mlx)
@@ -73,10 +70,8 @@ void	handle_key_S(t_mlx *mlx)
 	float	dy;
 	int		change_y;
 	float	px, py;
-	if (mlx->map[(mlx->player.y) / TAIL_SIZE ][mlx->player.x / TAIL_SIZE ] != '1')
+	if (mlx->map[(int )(mlx->player.y / TAIL_SIZE )][(int )(mlx->player.x / TAIL_SIZE )] != '1')
 	{
-		// mlx_destroy_image(mlx->mlx, mlx->img);
-		// draw_map(mlx, 0);
 		px = (float)mlx->player.x / TAIL_SIZE;
 		py = (float)mlx->player.y / TAIL_SIZE;
 		
@@ -95,7 +90,6 @@ void	handle_key_S(t_mlx *mlx)
 
 		mlx->player.x = px * TAIL_SIZE;
 		mlx->player.y = py * TAIL_SIZE;
-		// draw_player(mlx);
 	}
 }
 
@@ -130,11 +124,12 @@ void	rotate(t_mlx *mlx, int dir)
 		mlx->player.rotate -= 2 * M_PI;
 	else if (mlx->player.rotate < 0.0)
 		mlx->player.rotate += 2 * M_PI;
-	printf("[%d]: %lf\n", dir, mlx->player.rotate);
 }
 
 int ft_key_hook(int key, t_mlx *mlx)
 {	
+	mlx_destroy_image(mlx->mlx, mlx->img);
+	mlx->img = NULL;
 	if (key == KEY_ESC)
 	{
 		mlx_destroy_window(mlx->mlx, mlx->win);
@@ -155,6 +150,5 @@ int ft_key_hook(int key, t_mlx *mlx)
 	else
 		return (0);
 	draw_map(mlx, 0);
-	// printf("%f\n", mlx->player.rotate);
 	return (0);
 }

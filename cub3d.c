@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:51 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/20 18:04:42 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/23 15:31:12 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,27 +50,46 @@ void	init_mlx(t_mlx *mlx)
 	len = 0;
 	i = 0;
 	mlx->map = get_map(mlx->lst);
+	
 	while (mlx->map && mlx->map[i])
 	{
 		if (ft_strlen(mlx->map[i]) > len)
 			len = ft_strlen(mlx->map[i]);
 		i++;
 	}
-	mlx->width = len * TAIL_SIZE;
+	mlx->width = WIDTH;
 	i = 0;
 	while (mlx->map && mlx->map[i])
 		i++;
-	mlx->height = i * TAIL_SIZE;
+	mlx->height = HEIGHT;
 	mlx->mlx = mlx_init();
 	mlx->win = mlx_new_window(mlx->mlx, mlx->width, mlx->height, "CUB3D");
 }
 
-int main(void)
+void	ft_free_split(char **split)
+{
+	int	i;
+	
+	i = 0;
+	while (split && split[i])
+	{
+		free(split[i]);
+		i++;
+	}
+	free(split);
+}
+
+int main(int ac, char **av)
 {
 	t_mlx	mlx;
-
+	
+	if (ac != 2)
+	{
+		printf("Error\n\tPlease enter the path of map\n");
+		return (1);
+	}
 	ft_bzero(&mlx, sizeof(t_mlx));
-	if (check_map("maps/map.cub", &mlx))
+	if (check_map(av[1], &mlx))
 	{
 		init_mlx(&mlx);
 		mlx_hook(mlx.win, 2, 0, ft_key_hook, &mlx);

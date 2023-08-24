@@ -6,7 +6,7 @@
 #    By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/27 17:47:56 by rlabbiz           #+#    #+#              #
-#    Updated: 2023/08/19 17:03:10 by rlabbiz          ###   ########.fr        #
+#    Updated: 2023/08/23 14:45:40 by rlabbiz          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,8 @@ MLX = -Imlx -lmlx -framework OpenGL -framework AppKit
 NAME = cub3d
 OBJ =	check_map.o \
 		draw_map.o \
-		handle_key.o
+		handle_key.o \
+		ray_casting.o
 MAIN = cub3d.c
 DEF = cub3d.h
 LIBFT = libft/libft.a
