@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:51 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/23 15:31:12 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/24 13:44:25 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,16 @@ void	mlx_put(t_mlx *mlx, int x, int y, int color)
 
 	dst = mlx->addr + (y * mlx->line_lenght + x * (mlx->bits_per_pixel / 8));
 	*(unsigned int *)dst = color;
+}
+
+void	mlx_put_rgb(t_mlx *mlx, int x, int y, int *color)
+{
+	int	dst;
+
+	dst = (y * mlx->line_lenght + x * (mlx->bits_per_pixel / 8));
+	mlx->addr[dst] = color[0];
+	mlx->addr[dst + 1] = color[1];
+	mlx->addr[dst + 2] = color[2];
 }
 
 void	init_mlx(t_mlx *mlx)

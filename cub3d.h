@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/23 15:32:00 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/25 19:44:11 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,13 @@
 # define YEL "\e[0;33m"
 # define reset "\e[0m"
 
-# define TAIL_SIZE 15
+# define TAIL_SIZE 10
 # define WIDTH 1800
 # define HEIGHT 800
+
+# define FOV 60 * (M_PI / 180)
+# define RAYS WIDTH
+# define ANGLE_INCREMENT FOV / RAYS
 
 // define the keys of keyboard 
 # define LEFT_ARROW 123
@@ -58,10 +62,18 @@ typedef struct s_angle
 
 typedef struct s_ray
 {
-	int	is_up;
-	int	is_down;
-	int	is_right;
-	int	is_left;
+	int		is_up;
+	int		is_down;
+	int		is_right;
+	int		is_left;
+	int 	texture_width;
+	int 	texture_height;
+	double	wall_height;
+	int		vertical;
+	int		texture_y;
+	int		texture_x;
+	double	wall_x;
+	double	wall_y;
 }	t_ray;
 
 // typedef struct s_mini
@@ -72,10 +84,19 @@ typedef struct s_ray
 
 typedef struct s_player
 {
-	float	x;
-	float	y;
+	double	x;
+	double	y;
 	double	rotate;
 }	t_player;
+
+typedef struct s_xpm
+{
+	void	*img;
+	char	*addr;
+	int		bits_per_pixel;
+	int		line_lenght;
+	int		endian;
+}	t_xpm;
 
 typedef struct s_mlx
 {
@@ -83,6 +104,7 @@ typedef struct s_mlx
 	void		*win;
 	void		*img;
 	char		*addr;
+	void		*img_ptr;
 	int			width;
 	int			height;
 	int			bits_per_pixel;
@@ -95,12 +117,13 @@ typedef struct s_mlx
 	t_player	player;
 	t_angle		angle;
 	t_ray		ray;
-	// t_mini		mini;
+	t_xpm		xpm;
 }	t_mlx;
 
 // cub3d
 int		skip_spaces(const char *str);
 void	mlx_put(t_mlx *mlx, int x, int y, int color);
+void	mlx_put_rgb(t_mlx *mlx, int x, int y, int *color);
 void	ft_free_split(char **split);
 
 // handle_key

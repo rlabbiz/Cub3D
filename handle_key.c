@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/19 16:06:46 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/21 19:30:26 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/25 12:03:41 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 void	handle_key_D(t_mlx *mlx)
 {
+	mlx_destroy_image(mlx->mlx, mlx->img);
+	mlx->img = NULL;
 	if (mlx->map[(int )(mlx->player.y  / TAIL_SIZE)][(int )((mlx->player.x + 6)/ TAIL_SIZE)] != '1')
 	{
 		// mlx_destroy_image(mlx->mlx, mlx->img);
@@ -26,6 +28,8 @@ void	handle_key_D(t_mlx *mlx)
 
 void	handle_key_A(t_mlx *mlx)
 {
+	mlx_destroy_image(mlx->mlx, mlx->img);
+	mlx->img = NULL;
 	if (mlx->map[(int )(mlx->player.y / TAIL_SIZE)][(int )(mlx->player.x / TAIL_SIZE)] != '1')
 	{
 		// mlx_destroy_image(mlx->mlx, mlx->img);
@@ -37,14 +41,17 @@ void	handle_key_A(t_mlx *mlx)
 
 void	handle_key_W(t_mlx *mlx)
 {
-	float	dx;
-	float	dy;
-	int		change_y;
-	float	px, py;
+	double	dx;
+	double	dy;
+	double		change_y;
+	double	px, py;
+
+	mlx_destroy_image(mlx->mlx, mlx->img);
+	mlx->img = NULL;
 	// if (mlx->map[(int )(mlx->player.y / TAIL_SIZE) ][(int )(mlx->player.x / TAIL_SIZE) ] != '1')
 	// {
-		px = (float)mlx->player.x / TAIL_SIZE;
-		py = (float)mlx->player.y / TAIL_SIZE;
+		px = mlx->player.x / TAIL_SIZE;
+		py = mlx->player.y / TAIL_SIZE;
 		
 		dx = cos(mlx->player.rotate) / 3.0;
 		dy = sin(mlx->player.rotate) / 3.0;
@@ -66,14 +73,17 @@ void	handle_key_W(t_mlx *mlx)
 
 void	handle_key_S(t_mlx *mlx)
 {
-	float	dx;
-	float	dy;
-	int		change_y;
-	float	px, py;
+	double	dx;
+	double	dy;
+	double		change_y;
+	double	px, py;
+
+	mlx_destroy_image(mlx->mlx, mlx->img);
+	mlx->img = NULL;
 	if (mlx->map[(int )(mlx->player.y / TAIL_SIZE )][(int )(mlx->player.x / TAIL_SIZE )] != '1')
 	{
-		px = (float)mlx->player.x / TAIL_SIZE;
-		py = (float)mlx->player.y / TAIL_SIZE;
+		px = mlx->player.x / TAIL_SIZE;
+		py = mlx->player.y / TAIL_SIZE;
 		
 		dx = -1.0 * cos(mlx->player.rotate) / 2.0;
 		dy = -1.0 * sin(mlx->player.rotate) / 2.0;
@@ -119,6 +129,8 @@ void	handle_key_right(t_mlx *mlx)
 
 void	rotate(t_mlx *mlx, int dir)
 {
+	mlx_destroy_image(mlx->mlx, mlx->img);
+	mlx->img = NULL;
 	mlx->player.rotate += (double) dir * ROT;
 	if (mlx->player.rotate >= 2 * M_PI)
 		mlx->player.rotate -= 2 * M_PI;
@@ -128,8 +140,6 @@ void	rotate(t_mlx *mlx, int dir)
 
 int ft_key_hook(int key, t_mlx *mlx)
 {	
-	mlx_destroy_image(mlx->mlx, mlx->img);
-	mlx->img = NULL;
 	if (key == KEY_ESC)
 	{
 		mlx_destroy_window(mlx->mlx, mlx->win);

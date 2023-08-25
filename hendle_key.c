@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/19 16:06:46 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/19 17:53:59 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/25 12:03:50 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ void	handle_key_W(t_mlx *mlx)
 	if (mlx->map[(mlx->player.y - 6) / TAIL_SIZE ][mlx->player.x / TAIL_SIZE ] != '1')
 	{
 		mlx_destroy_image(mlx->mlx, mlx->img);
-		float pdx = cos(mlx->player.rotate) * 2;
-		float pdy = sin(mlx->player.rotate) * 2;
+		double pdx = cos(mlx->player.rotate) * 2;
+		double pdy = sin(mlx->player.rotate) * 2;
 		mlx->player.y += pdy;
 		mlx->player.x += pdx;
 		draw_map(mlx, 0);
@@ -53,8 +53,8 @@ void	handle_key_S(t_mlx *mlx)
 	if (mlx->map[(mlx->player.y + 6) / TAIL_SIZE][mlx->player.x / TAIL_SIZE] != '1')
 	{
 		mlx_destroy_image(mlx->mlx, mlx->img);
-		float pdx = cos(mlx->player.rotate) * -2;
-		float pdy = sin(mlx->player.rotate) * -2;
+		double pdx = cos(mlx->player.rotate) * -2;
+		double pdy = sin(mlx->player.rotate) * -2;
 		mlx->player.y += pdy;
 		mlx->player.x += pdx;
 		draw_map(mlx, 0);
