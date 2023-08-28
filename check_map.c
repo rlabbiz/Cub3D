@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 11:18:07 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/23 15:34:11 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/28 18:39:36 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,23 +136,26 @@ int	check_color(const char *line, t_mlx *mlx, char c)
 
 int	check_texture(const char *line, t_mlx *mlx, char c)
 {
-	int	i;
-	int	fd;
+	char	*file;
+	int		i;
+	int		fd;
 
 	i = 3;
 	if (!line[i])
 		return (0);
-	fd = open(line + 3, O_RDONLY);
+	file = ft_strtrim(line + 3, " ");
+	fd = open(file, O_RDONLY);
 	if (fd == -1)
 		return (0);
+	close(fd);
 	if (c == 'N')
-		mlx->texture.no = fd;
+		mlx->texture.no = file;
 	else if (c == 'S')
-		mlx->texture.so = fd;
+		mlx->texture.so = file;
 	else if (c == 'W')
-		mlx->texture.we = fd;
+		mlx->texture.we = file;
 	else if (c == 'E')
-		mlx->texture.ea = fd;
+		mlx->texture.ea = file;
 	return (1);
 }
 

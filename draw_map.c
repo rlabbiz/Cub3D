@@ -6,17 +6,17 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/01 19:54:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/25 20:43:10 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/28 18:39:31 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int	mlx_get_color(t_mlx *mlx, int x, int y)
+int	mlx_get_color(t_xpm *xpm, int x, int y)
 {
 	char	*dst;
 
-	dst = mlx->xpm.addr + (y * mlx->xpm.line_lenght + x * (mlx->xpm.bits_per_pixel / 8));
+	dst = xpm->addr + (y * xpm->line_lenght + x * (xpm->bits_per_pixel / 8));
 	return (*(int *)dst);
 }
 
@@ -243,7 +243,8 @@ double	vertical(t_mlx *mlx, double *ver_x, double *ver_y, double angle)
 	start_y = (int)(mlx->player.y) + (start_x - (int)(mlx->player.x)) * tan(angle);
 	
 	step_x = TAIL_SIZE;
-	step_x *= mlx->ray.is_left ? -1 : 1;
+	// step_x *= mlx->ray.is_left ? -1 : 1;
+	step_x *= 1 - 2 * (mlx->ray.is_left != 0);
 	step_y = TAIL_SIZE * tan(angle);
 	step_y *= mlx->ray.is_up && step_y > 0 ? -1 : 1;
 	step_y *= mlx->ray.is_down && step_y < 0 ? -1 : 1;
@@ -305,7 +306,7 @@ double	cast_rays(t_mlx *mlx, double angle)
 	}
 }
 
-void	draw_angle(t_mlx *mlx)
+void	draw_ray(t_mlx *mlx)
 {
 	double	x;
 	double	y;
@@ -315,17 +316,40 @@ void	draw_angle(t_mlx *mlx)
 	DDA(mlx, mlx->player.x, mlx->player.y, mlx->player.x + x, mlx->player.y + y, 0xE74C3C);
 }
 
+int	get_deroction(t_mlx *mlx)
+{
+	if (!mlx->ray.vertical && mlx->ray.is_up)
+		return (0);
+	if (!mlx->ray.vertical && mlx->ray.is_down)
+		return (1);
+	if (mlx->ray.vertical && mlx->ray.is_left)
+		return (2);
+	return(3);
+}
+
 void	draw_wall(t_mlx *mlx, int top, int bottom, int col)
 {
 	int i;
+	t_xpm	*xpm;
+
+	xpm = &mlx->xpm[get_deroction(mlx)];
 	
 	i = top;
+	if (mlx->ray.vertical)
+		mlx->ray.texture_x = xpm->width / TAIL_SIZE * \
+			(mlx->ray.wall_y - (int)(mlx->ray.wall_y / TAIL_SIZE) * TAIL_SIZE);
+	else
+		mlx->ray.texture_x = xpm->width / TAIL_SIZE * \
+			(mlx->ray.wall_x - (int)(mlx->ray.wall_x / TAIL_SIZE) * TAIL_SIZE);
+	// 	mlx->ray.texture_x = (int)mlx->ray.texture_width / TAIL_SIZE;
 	while (i < bottom)
 	{
-		mlx->ray.texture_y = (i - top) * ((float)mlx->ray.texture_height / mlx->ray.wall_height);
-		// printf("%d %d\n", mlx->ray.texture_x, mlx->ray.texture_y);
-		// if ((mlx->ray.texture_x > 0 && mlx->ray.texture_x < mlx->ray.texture_width) && (mlx->ray.texture_y > 0 && mlx->ray.texture_y < mlx->ray.texture_height))
-		mlx_put(mlx, col, i, 0xE74C3C);
+		int new_top = i + ((int)mlx->ray.wall_height / 2) - (mlx->height / 2);
+		mlx->ray.texture_y = new_top * ((float)xpm->height / (int)(mlx->ray.wall_height)) ;
+		if ((mlx->ray.texture_x > 0 && mlx->ray.texture_x < xpm->width) && (mlx->ray.texture_y < xpm->height))
+		{
+			mlx_put(mlx, col, i, mlx_get_color(xpm, mlx->ray.texture_x, mlx->ray.texture_y));
+		}
 		i++;
 	}
 }
@@ -334,7 +358,10 @@ void	draw_floor(t_mlx *mlx, int bottom, int col)
 {
 	while (bottom < mlx->height)
 	{
-		mlx_put_rgb(mlx, col, bottom, mlx->color.f);
+		// mlx_put_rgb(mlx, col, bottom, mlx->color.f);
+		// printf("value: [%d, %d, %d]\n", mlx->color.f[0], mlx->color.f[1], mlx->color.f[2]);
+		// break ;
+		mlx_put(mlx, col, bottom, create_rgb(mlx->color.f));
 		bottom++;
 	}
 }
@@ -343,7 +370,10 @@ void	draw_ceiling(t_mlx *mlx, int top, int col)
 {
 	while (top >= 0)
 	{
-		mlx_put_rgb(mlx, col, top, mlx->color.c);
+		// mlx_put_rgb(mlx, col, top, mlx->color.c);
+		// printf("value: [%d, %d, %d]\n", mlx->color.c[0], mlx->color.c[1], mlx->color.c[2]);
+		// break ;
+		mlx_put(mlx, col, top, create_rgb(mlx->color.c));
 		top--;
 	}
 }
@@ -352,7 +382,6 @@ void	rays_casting(t_mlx *mlx)
 {
 	double	col;
 	double	ray_angle;
-	double	dest;
 	double	dest_project_plane;
 	double	new_dest;
 	double	top_pixel;
@@ -364,10 +393,9 @@ void	rays_casting(t_mlx *mlx)
 	while (col < RAYS)
 	{
 		// get the smallest destion of ray 
-		dest = cast_rays(mlx, uniform_angle(ray_angle));
-		
+		mlx->ray.dest = cast_rays(mlx, uniform_angle(ray_angle));
 		// get the new destion with cos
-		new_dest = dest * cos(ray_angle - mlx->player.rotate);
+		new_dest = mlx->ray.dest * cos(ray_angle - mlx->player.rotate);
 		
 		// get the wall height
 		mlx->ray.wall_height = (TAIL_SIZE / new_dest) * dest_project_plane;
@@ -379,9 +407,7 @@ void	rays_casting(t_mlx *mlx)
 		if (bottom_pixel > mlx->height)
 			bottom_pixel = mlx->height;
 		draw_ceiling(mlx, top_pixel, col);
-		mlx->ray.texture_x = (int)mlx->ray.wall_x / TAIL_SIZE;
-		if (mlx->ray.vertical)
-			mlx->ray.texture_x = (int)mlx->ray.wall_y / TAIL_SIZE;
+		
 		draw_wall(mlx, top_pixel, bottom_pixel, col);
 		draw_floor(mlx, bottom_pixel, col);
 		ray_angle += ANGLE_INCREMENT;
@@ -404,26 +430,48 @@ void	draw_player(t_mlx *mlx)
 		}
 		x++;
 	}
-	draw_angle(mlx);
+	draw_ray(mlx);
+}
+
+t_xpm	*get_textures(t_mlx *mlx)
+{
+	t_xpm	*xpm;
+
+	xpm = malloc(sizeof(t_xpm) * 4);
+
+	xpm[0].img = mlx_xpm_file_to_image(mlx->mlx, mlx->texture.ea, &xpm[0].width, &xpm[0].height);
+	xpm[0].addr = mlx_get_data_addr(xpm[0].img, &xpm[0].bits_per_pixel, &xpm[0].line_lenght, &xpm[0].endian);
+
+	xpm[1].img = mlx_xpm_file_to_image(mlx->mlx, mlx->texture.no, &xpm[1].width, &xpm[1].height);
+	xpm[1].addr = mlx_get_data_addr(xpm[1].img, &xpm[1].bits_per_pixel, &xpm[1].line_lenght, &xpm[1].endian);
+
+	xpm[2].img = mlx_xpm_file_to_image(mlx->mlx, mlx->texture.so, &xpm[2].width, &xpm[2].height);
+	xpm[2].addr = mlx_get_data_addr(xpm[2].img, &xpm[2].bits_per_pixel, &xpm[2].line_lenght, &xpm[2].endian);
+
+	xpm[3].img = mlx_xpm_file_to_image(mlx->mlx, mlx->texture.we, &xpm[3].width, &xpm[3].height);
+	xpm[3].addr = mlx_get_data_addr(xpm[3].img, &xpm[3].bits_per_pixel, &xpm[3].line_lenght, &xpm[3].endian);
+	return (xpm);
 }
 
 void    draw_map(t_mlx *mlx, int player)
 {
-	t_list	*lst;
-	
-	if (mlx->img == NULL)
+	if (!mlx->img)
 	{
 		mlx->img = mlx_new_image(mlx->mlx, mlx->width, mlx->height);
 		mlx->addr = mlx_get_data_addr(mlx->img, &mlx->bits_per_pixel, &mlx->line_lenght, &mlx->endian);
 	}
-	lst = mlx->lst;
+	// if (!mlx->xpm)
+		mlx->xpm = get_textures(mlx);
+	// if (mlx->xpm.img == NULL)
+	// {
+	// 	mlx->xpm.img = mlx_xpm_file_to_image(mlx->mlx, "img/image.xpm", &mlx->ray.texture_width, &mlx->ray.texture_height);
+	// 	mlx->xpm.addr = mlx_get_data_addr(mlx->xpm.img, &mlx->xpm.bits_per_pixel, &mlx->xpm.line_lenght, &mlx->xpm.endian);
+	// }
 	if (player)
 		get_player_postion(mlx);
 	rays_casting(mlx);
 	draw_mini_map(mlx);
-	mlx->xpm.img = mlx_xpm_file_to_image(mlx->mlx, "img/image.xpm", &mlx->ray.texture_width, &mlx->ray.texture_height);
-	mlx->xpm.addr = mlx_get_data_addr(mlx->xpm.img, &mlx->xpm.bits_per_pixel, &mlx->xpm.line_lenght, &mlx->xpm.endian);
-	// int color = mlx_get_color(mlx, 0, 0);
+	
 	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
-	// mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img_ptr, 0, 0);
+	// mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->xpm.img, 0, 0);
 }

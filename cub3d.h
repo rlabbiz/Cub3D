@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/25 19:44:11 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/28 18:07:51 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@
 # define FOV 60 * (M_PI / 180)
 # define RAYS WIDTH
 # define ANGLE_INCREMENT FOV / RAYS
+# define MOVE_SPEAD 4.00
+# define UP 1
+# define DOWN -1
+# define RIGHT 1
+# define LEFT -1
 
 // define the keys of keyboard 
 # define LEFT_ARROW 123
@@ -42,10 +47,10 @@
 
 typedef struct s_texture
 {
-	int	no;
-	int	so;
-	int	we;
-	int	ea;
+	char	*no;
+	char	*so;
+	char	*we;
+	char	*ea;
 }	t_texture;
 
 typedef struct s_color
@@ -63,6 +68,7 @@ typedef struct s_angle
 typedef struct s_ray
 {
 	int		is_up;
+	double	dest;
 	int		is_down;
 	int		is_right;
 	int		is_left;
@@ -75,12 +81,6 @@ typedef struct s_ray
 	double	wall_x;
 	double	wall_y;
 }	t_ray;
-
-// typedef struct s_mini
-// {
-// 	int width;
-// 	int	height;
-// }	t_mini;
 
 typedef struct s_player
 {
@@ -96,6 +96,8 @@ typedef struct s_xpm
 	int		bits_per_pixel;
 	int		line_lenght;
 	int		endian;
+	int		width;
+	int		height;
 }	t_xpm;
 
 typedef struct s_mlx
@@ -104,7 +106,6 @@ typedef struct s_mlx
 	void		*win;
 	void		*img;
 	char		*addr;
-	void		*img_ptr;
 	int			width;
 	int			height;
 	int			bits_per_pixel;
@@ -117,7 +118,7 @@ typedef struct s_mlx
 	t_player	player;
 	t_angle		angle;
 	t_ray		ray;
-	t_xpm		xpm;
+	t_xpm		*xpm;
 }	t_mlx;
 
 // cub3d
@@ -125,6 +126,7 @@ int		skip_spaces(const char *str);
 void	mlx_put(t_mlx *mlx, int x, int y, int color);
 void	mlx_put_rgb(t_mlx *mlx, int x, int y, int *color);
 void	ft_free_split(char **split);
+int		create_rgb(int *color);
 
 // handle_key
 int ft_key_hook(int key, t_mlx *mlx);
@@ -139,5 +141,6 @@ void	DDA(t_mlx *mlx, int X0, int Y0, int X1, int Y1, int color);
 void    draw_map(t_mlx *mlx, int player);
 char	**get_map(t_list *lst);
 void	draw_player(t_mlx *mlx);
+int		is_wall(t_mlx *mlx, int x, int y);
 
 #endif

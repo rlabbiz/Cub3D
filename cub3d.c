@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:51 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/24 13:44:25 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/28 12:17:48 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 int ft_close_hook(t_mlx *mlx)
 {
+	if (mlx->img != NULL)
+		mlx_destroy_image(mlx->mlx, mlx->img);
 	mlx_destroy_window(mlx->mlx, mlx->win);
 	exit(0);
 	return (0);
@@ -24,7 +26,7 @@ void	ft_del(void *ptr)
 	free(ptr);
 }
 
-int skip_spaces(const char *str)
+int	skip_spaces(const char *str)
 {
 	int	i;
 
@@ -52,6 +54,11 @@ void	mlx_put_rgb(t_mlx *mlx, int x, int y, int *color)
 	mlx->addr[dst + 2] = color[2];
 }
 
+int	create_rgb(int *color)
+{
+	return (color[0] << 16 | color[1] << 8 | color[2]);
+}
+
 void	init_mlx(t_mlx *mlx)
 {
 	size_t	len;
@@ -60,17 +67,7 @@ void	init_mlx(t_mlx *mlx)
 	len = 0;
 	i = 0;
 	mlx->map = get_map(mlx->lst);
-	
-	while (mlx->map && mlx->map[i])
-	{
-		if (ft_strlen(mlx->map[i]) > len)
-			len = ft_strlen(mlx->map[i]);
-		i++;
-	}
 	mlx->width = WIDTH;
-	i = 0;
-	while (mlx->map && mlx->map[i])
-		i++;
 	mlx->height = HEIGHT;
 	mlx->mlx = mlx_init();
 	mlx->win = mlx_new_window(mlx->mlx, mlx->width, mlx->height, "CUB3D");

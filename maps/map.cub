@@ -1,15 +1,15 @@
 F 0,102,0
-                NO img/path_to_the_north_texture
+                NO img/north.xpm
 
 
-                        SO ./img/path_to_the_south_texture
+                        SO img/south.xpm
 
 
-                                  WE img/path_to_the_west_texture
+                                  WE img/west.xpm
 
-EA img/path_to_the_east_texture
+EA img/east.xpm
 
-C 221,0,0
+C 0,0,255
 
 
         1111111111111111111111111
