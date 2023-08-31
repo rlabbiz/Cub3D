@@ -6,12 +6,11 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/19 16:06:46 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/28 18:39:34 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/31 19:32:40 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "cub3d.h"
-#define ROT 0.04
+#include "cub3d.h"
 
 void	handle_key_D(t_mlx *mlx)
 {
@@ -45,8 +44,8 @@ void	handle_up_down(t_mlx *mlx, int key)
 	px = mlx->player.x / TAIL_SIZE;
 	py = mlx->player.y / TAIL_SIZE;
 	
-	dx = key * cos(mlx->player.rotate) / (double)MOVE_SPEAD;
-	dy = key * sin(mlx->player.rotate) / (double)MOVE_SPEAD;
+	dx = key * cos(mlx->player.rotate) * MOVE_SPEAD;
+	dy = key * sin(mlx->player.rotate) * MOVE_SPEAD;
 
 	change_y = 0;
 	if (mlx->map[(int)(py + dy)][(int)(px + dx)] == '1')
@@ -54,34 +53,18 @@ void	handle_up_down(t_mlx *mlx, int key)
 	if (mlx->map[(int)(py + dy)][(int)px] != '1')
 		change_y = 1;
 	if (mlx->map[(int)py][(int)(px + dx)] != '1')
-		px += dx;
+		px += (dx);
 	if (change_y)
-		py += dy;
+		py += (dy);
 	mlx->player.x = px * TAIL_SIZE;
 	mlx->player.y = py * TAIL_SIZE;
-}
-
-void	handle_key_left(t_mlx *mlx)
-{
-	mlx_destroy_image(mlx->mlx, mlx->img);
-	mlx->player.rotate += -1 * (1 * (M_PI / 180));
-	if ((int )mlx->player.rotate < 0)
-		mlx->player.rotate += 2 * M_PI;
-}
-
-void	handle_key_right(t_mlx *mlx)
-{
-	mlx_destroy_image(mlx->mlx, mlx->img);
-	mlx->player.rotate += 1 * (M_PI / 180);
-	if (mlx->player.rotate >= 2 * M_PI - (30 * (M_PI / 180)))
-		mlx->player.rotate -= 2 * M_PI;
 }
 
 void	rotate(t_mlx *mlx, int dir)
 {
 	mlx_destroy_image(mlx->mlx, mlx->img);
 	mlx->img = NULL;
-	mlx->player.rotate += (double) dir * ROT;
+	mlx->player.rotate += (double) dir * ROTATE_SPEAD;
 	if (mlx->player.rotate >= 2 * M_PI)
 		mlx->player.rotate -= 2 * M_PI;
 	else if (mlx->player.rotate < 0.0)

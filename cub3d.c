@@ -6,58 +6,11 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:51 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/28 12:17:48 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/08/31 20:12:16 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "cub3d.h"
-
-int ft_close_hook(t_mlx *mlx)
-{
-	if (mlx->img != NULL)
-		mlx_destroy_image(mlx->mlx, mlx->img);
-	mlx_destroy_window(mlx->mlx, mlx->win);
-	exit(0);
-	return (0);
-}
-
-void	ft_del(void *ptr)
-{
-	free(ptr);
-}
-
-int	skip_spaces(const char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
-		i++;
-	return (i);
-}
-
-void	mlx_put(t_mlx *mlx, int x, int y, int color)
-{
-	char	*dst;
-
-	dst = mlx->addr + (y * mlx->line_lenght + x * (mlx->bits_per_pixel / 8));
-	*(unsigned int *)dst = color;
-}
-
-void	mlx_put_rgb(t_mlx *mlx, int x, int y, int *color)
-{
-	int	dst;
-
-	dst = (y * mlx->line_lenght + x * (mlx->bits_per_pixel / 8));
-	mlx->addr[dst] = color[0];
-	mlx->addr[dst + 1] = color[1];
-	mlx->addr[dst + 2] = color[2];
-}
-
-int	create_rgb(int *color)
-{
-	return (color[0] << 16 | color[1] << 8 | color[2]);
-}
+#include "cub3d.h"
 
 void	init_mlx(t_mlx *mlx)
 {
@@ -76,7 +29,7 @@ void	init_mlx(t_mlx *mlx)
 void	ft_free_split(char **split)
 {
 	int	i;
-	
+
 	i = 0;
 	while (split && split[i])
 	{
@@ -86,17 +39,42 @@ void	ft_free_split(char **split)
 	free(split);
 }
 
-int main(int ac, char **av)
+int	check_name(char *str)
+{
+	char	**split;
+	int		i;
+
+	split = ft_split(str, '.');
+	i = 0;
+	while (split[i])
+		i++;
+	if (!split[0] || !split[1] || !split[i - 1])
+	{
+		printf("Error\n\tThe name of map not valid\n");
+		ft_free_split(split);
+		return (0);
+	}
+	if (ft_strncmp(split[i - 1], "cub", 3) || ft_strlen(split[i - 1]) != 3)
+	{
+		printf("Error\n\tThe name of map not valid\n");
+		ft_free_split(split);
+		return (0);
+	}
+	ft_free_split(split);
+	return (1);
+}
+
+int	main(int ac, char **av)
 {
 	t_mlx	mlx;
-	
+
 	if (ac != 2)
 	{
 		printf("Error\n\tPlease enter the path of map\n");
 		return (1);
 	}
 	ft_bzero(&mlx, sizeof(t_mlx));
-	if (check_map(av[1], &mlx))
+	if (check_name(av[1]) && check_map(av[1], &mlx))
 	{
 		init_mlx(&mlx);
 		mlx_hook(mlx.win, 2, 0, ft_key_hook, &mlx);
