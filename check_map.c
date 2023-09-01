@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 11:18:07 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/31 18:44:40 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/09/01 16:56:40 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,13 +62,23 @@ int	check_last_lines(t_mlx *mlx, t_list *list)
 		len++;
 		list = list->next;
 	}
+	if (mlx->player.player == 0)
+		return (0);
 	return (1);
 }
 
 int	check_enter_all(t_mlx *mlx)
 {
 	if (mlx->color.c[3] == 0 || mlx->color.f[3] == 0)
+	{
+		printf("Error\n\tNeed the color range\n");
 		return (0);
+	}
+	if (!mlx->texture.ea || !mlx->texture.no || !mlx->texture.so || !mlx->texture.we)
+	{
+		printf("Error\n\tNeed all textures\n");
+		return (0);
+	}
 	return (1);
 }
 
@@ -108,7 +118,7 @@ int	check_map(const char *path, t_mlx *mlx)
 		len++;
 	}
 	if (!check_enter_all(mlx))
-		return (printf("Error\n\tNeed the color range\n"), 0);
+		return (0);
 	if (!check_last_lines(mlx, lst))
 		return (printf("Error\n\tThe Map not valid\n"), 0);
 	return (1);

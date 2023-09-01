@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:51 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/31 20:12:16 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/09/01 15:42:28 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,13 @@ int	main(int ac, char **av)
 	if (check_name(av[1]) && check_map(av[1], &mlx))
 	{
 		init_mlx(&mlx);
-		mlx_hook(mlx.win, 2, 0, ft_key_hook, &mlx);
+		mlx_key_hook(mlx.win, ft_key_hook, &mlx);
 		mlx_hook(mlx.win, 17, 0, ft_close_hook, &mlx);
 		draw_map(&mlx, 1);
 		mlx_loop(mlx.mlx);
+		// free_lst(&mlx);
 		return (0);
 	}
+	// free_lst(&mlx);
 	return (1);
 }

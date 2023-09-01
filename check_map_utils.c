@@ -6,11 +6,44 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:17:10 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/31 18:44:48 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/09/01 16:50:50 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+int	check_player(t_mlx *mlx, char c)
+{
+	if (c == 'N')
+	{
+		if (mlx->player.player)
+			return (0);
+		mlx->player.player = 1;
+		mlx->player.rotate = 3 * M_PI / 2;
+	}
+	else if (c == 'S')
+	{
+		if (mlx->player.player)
+			return (0);
+		mlx->player.player = 1;
+		mlx->player.rotate = M_PI / 2;
+	}
+	else if (c == 'W')
+	{
+		if (mlx->player.player)
+			return (0);
+		mlx->player.player = 1;
+		mlx->player.rotate = M_PI;
+	}
+	else if (c == 'E')
+	{
+		if (mlx->player.player)
+			return (0);
+		mlx->player.player = 1;
+		mlx->player.rotate = 0;
+	}
+	return (1);
+}
 
 int	check_valid_map(t_mlx *mlx, char *curr, char *next, int tmp[2])
 {
@@ -28,15 +61,7 @@ int	check_valid_map(t_mlx *mlx, char *curr, char *next, int tmp[2])
 		return (0);
 	if (curr[tmp[0]] == ' ' && tmp[0] <= tmp[1] && next[tmp[0]] == '0')
 		return (0);
-	if (curr[tmp[0]] == 'N')
-		mlx->player.rotate = 3 * M_PI / 2;
-	else if (curr[tmp[0]] == 'S')
-		mlx->player.rotate = M_PI / 2;
-	else if (curr[tmp[0]] == 'W')
-		mlx->player.rotate = M_PI;
-	else if (curr[tmp[0]] == 'E')
-		mlx->player.rotate = 0;
-	return (1);
+	return (check_player(mlx, curr[tmp[0]]));
 }
 
 int	check_color_string(const char *line)

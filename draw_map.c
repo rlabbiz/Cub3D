@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/01 19:54:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/31 18:12:32 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/09/01 17:04:36 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,12 +80,12 @@ int	is_wall(t_mlx *mlx, int x, int y)
 int	get_deroction(t_mlx *mlx)
 {
 	if (!mlx->ray.vertical && mlx->ray.is_up)
-		return (0);
-	if (!mlx->ray.vertical && mlx->ray.is_down)
 		return (1);
-	if (mlx->ray.vertical && mlx->ray.is_left)
+	if (!mlx->ray.vertical && mlx->ray.is_down)
 		return (2);
-	return (3);
+	if (mlx->ray.vertical && mlx->ray.is_left)
+		return (3);
+	return (0);
 }
 
 void	draw_map(t_mlx *mlx, int player)
@@ -106,6 +106,7 @@ void	draw_map(t_mlx *mlx, int player)
 		get_player_postion(mlx);
 	}
 	rays_casting(mlx);
+	draw_mini_map(mlx);
 	if (check_map)
 		mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img, 0, 0);
 }

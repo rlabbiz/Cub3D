@@ -6,7 +6,7 @@
 /*   By: rlabbiz <rlabbiz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 17:47:54 by rlabbiz           #+#    #+#             */
-/*   Updated: 2023/08/31 19:32:44 by rlabbiz          ###   ########.fr       */
+/*   Updated: 2023/09/01 16:48:24 by rlabbiz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@
 # define HEIGHT 900
 
 # define RAYS WIDTH
-# define MOVE_SPEAD 0.80
+# define MARGE 3
+# define MOVE_SPEAD 8
 # define ROTATE_SPEAD 0.2
 # define UP 1
 # define DOWN -1
@@ -85,6 +86,7 @@ typedef struct s_player
 	double	x;
 	double	y;
 	double	rotate;
+	int		player;
 }	t_player;
 
 typedef struct s_xpm
